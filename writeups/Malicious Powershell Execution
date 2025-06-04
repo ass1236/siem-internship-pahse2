@@ -1,0 +1,57 @@
+🧠 Objective:
+Detect the use of encoded PowerShell commands that:
+ ** Are commonly used in malicious or obfuscated attacks
+ ** May be launched by Office macros or scripts
+ ** Drop executable files in suspicious locations
+
+🧪 Attack Simulation Command
+On the Windows agent (vic-agent), we simulate a common attacker technique using an encoded PowerShell command that drops an executable in a suspicious location.
+
+Command (Run as Administrator in PowerShell):
+
+--> Start-Process powershell -ArgumentList "-EncodedCommand", "JABiAHkAdABlAHMAIAA9ACAAWwBTAHkAcwB0AGUAbQAuAFQAZQB4AHQALgBFAG4AYwBvAGQAaQBuAGcAXQA6ADoAQQBTAEMASQBJAC4ARwBlAHQAQgB5AHQAZQBzACgAJwBIAGUAbABsAG8AJwApACA7ACAAWwBTAHkAcwB0AGUAbQAuAEkATwAuAEYAaQBsAGUAXQA6ADoAVwByAGkAdABlAEEAbABsAEIAeQB0AGUAcwAoACcAQwA6AFwAVwBpAG4AZABvAHcAcwBcAGUAdgBpAGwALgBlAHgAZQAnACwAIAAkAGIAeQB0AGUAcwAp"
+
+This base64 string executes:
+$bytes = [System.Text.Encoding]::ASCII.GetBytes('Hello')
+[System.IO.File]::WriteAllBytes('C:\Windows\evil.exe', $bytes)
+
+🔎 What It Simulates
+ ** An attacker uses an obfuscated (base64-encoded) PowerShell payload.
+ ** This payload writes a binary/executable to a location often used by malware (C:\Windows\evil.exe).
+
+🛡️ Detection Method Using Wazuh + Sysmon
+
+✅ Built-in Wazuh Rules That Trigger:
+ ** 92057 – PowerShell.exe executed an encoded command
+ ** 92205 – PowerShell dropped a file in Windows root folder
+ ** 92213 – A suspicious executable was dropped in a location commonly used by malware
+
+⚙️ Custom Correlation Rule (Wazuh Local Rule)
+creating a custom rule that triggers when all 3 built-in rules above fire in close succession:
+<group name="custom_malicious_powershell">
+  <rule id="100051" level="15" ignore="0">
+    <if_matched_sid>92057</if_matched_sid>  <!-- Encoded PowerShell -->
+    <if_matched_sid>92205</if_matched_sid>  <!-- File created in Windows root -->
+    <if_matched_sid>92213</if_matched_sid>  <!-- Executable drop in common malware folder -->
+    <description>⚠️ Malicious PowerShell execution: Encoded command dropped executable in suspicious location</description>
+    <mitre>
+      <id>T1059.001</id> <!-- PowerShell -->
+      <id>T1105</id>     <!-- Ingress Tool Transfer -->
+      <id>T1204.002</id> <!-- User Execution: Malicious File -->
+    </mitre>
+  </rule>
+</group>
+
+📈 Detection Result in Wazuh
+
+Example output from Wazuh Manager:
+Rule ID: 100051
+ ** Description: ⚠️ Malicious PowerShell execution: Encoded command dropped executable in suspicious location
+ ** Agent: vic-agent
+ ** MITRE: T1059.001, T1105, T1204.002
+ ** Level: 15
+🧩 Relevant Sysmon Event IDs
+ ** Event ID 1 – Process creation (powershell.exe)
+ ** Event ID 11 – File creation
+ ** Event ID 4104 – Encoded script block (if Script Block Logging is enabled)
+
