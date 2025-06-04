@@ -1,0 +1,55 @@
+💡 Overview
+This detection aims to identify suspicious behavior involving PowerShell downloading ZIP or RAR files from an external source, possibly indicating an attempt to stage or deliver malicious payloads. The activity is detected using correlated Sysmon events and custom Wazuh rules.
+
+📌 Attack Scenario
+An attacker or malicious script uses the following PowerShell command to download a ZIP file from GitHub:
+--> curl -o C:\users\windows\test.zip https://github.com/psf/requests/archive/refs/heads/main.zip
+
+This command may be part of a larger attack chain such as:
+ ** Initial access or payload delivery (MITRE T1105)
+ ** Execution of downloaded payloads (MITRE T1059.001)
+
+🧪 Detection Rules
+The following custom rules were used to detect this activity:
+
+🔹 Rule ID 100032: PowerShell Network Connection
+<rule id="100032" level="10">
+  <if_sid>61603</if_sid>
+  <field name="win.eventdata.image" type="pcre2">(?i)powershell\.exe</field>
+  <description>PowerShell initiated a network connection</description>
+  <mitre>
+    <id>T1059.001</id>
+    <id>T1105</id>
+  </mitre>
+</rule>
+ ** Triggered by: Sysmon Event ID 3 (Network Connection)
+ ** Condition: PowerShell process initiates a connection to an external IP
+
+🔹 Rule ID 92205: PowerShell Created Executable
+(Built-in rule)
+ ** Detects when PowerShell creates an executable file, particularly in sensitive directories.
+
+🔹 Rule ID 92212: Suspicious File Compression by PowerShell
+(Built-in rule)
+ ** Triggers when PowerShell creates .zip, .rar, or other archive files—commonly associated with staging or exfiltration.
+
+🔸 Correlation Rule 100033: Combined Activity
+<rule id="100033" level="15" frequency="3" timeframe="600">
+  <if_matched_sid>100032</if_matched_sid>
+  <if_matched_sid>92205</if_matched_sid>
+  <if_matched_sid>92212</if_matched_sid>
+  <description>PowerShell initiated a network connection, created an executable, and compressed files within 10 minutes</description>
+  <mitre>
+    <id>T1059.001</id>
+    <id>T1105</id>
+  </mitre>
+</rule>
+ ** Condition: All three rules must match within 10 minutes.
+ ** Purpose: Indicates likely malicious behavior involving download, execution staging, and possible packaging for exfiltration.
+
+✅ Result
+When the curl command was executed:
+ ** Rule 100032 matched on PowerShell's outbound connection.
+ ** Rule 92205 matched on the creation of a ZIP archive.
+ ** Rule 92212 matched due to file compression.
+ ** Rule 100033 triggered a high-severity alert for correlated behavior.
