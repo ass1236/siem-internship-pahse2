@@ -1,0 +1,57 @@
+🎯 Objective
+Simulate a lateral movement scenario by accessing a shared folder on another machine, copying an executable payload, and executing it remotely. 
+Investigate how Windows logs this behavior, and how Wazuh detects it using Security Event Logs.
+
+🧪 Simulation Steps
+1. Accessing the Remote Share
+net use \\<target-ip>\sharedtest /user:<target-ip>\<user_name> <password>
+✅ This command maps the shared folder using administrative credentials.
+
+2. Transferring the Payload
+copy .\VNC-Server-7.13.1-Windows.exe \\<target-ip>\sharedtest\pay.exe
+🟢 Payload is copied to the shared folder on the remote system.
+
+3. Executing the Payload Remotely
+powershell -Command "Start-Process -FilePath '\\<target-ip>\sharedtest\pay.exe'"
+🟣 The executable runs directly from the shared path using PowerShell.
+
+📋 What Windows Logs
+Detection relies entirely on Windows Security Event Logs:
+ ** Event ID 5145 — A network share object was accessed.
+ ** Event ID 4624 — Successful logon (relevant for credentialed access).
+ ** Event ID 4672 — Special privileges assigned to a new logon.
+ ** Event ID 5140 — Network share was accessed (overview level).
+
+🛠️ Agent-Side Configuration (on the target machine)
+To ensure proper detection and logging by Wazuh, the agent system must be configured with the following settings:
+
+✅ Enable Security Auditing Policies
+Open Local Security Policy or use Group Policy (GPO) to enable:
+ ** Audit Policy → Success and Failure:
+ ** Audit Logon Events
+ ** Audit Object Access
+ ** Audit Detailed File Share
+ ** Audit Process Creation (optional, for Event ID 4688)
+These policies ensure Event IDs like 5145, 4624, and 4688 are recorded.
+
+🚨 Wazuh Custom Rules
+🧩 Rule 1: Network Share Access — Lateral Movement
+<rule id="100202" level="7">
+  <if_sid>67017</if_sid> <!-- Corresponds to Event ID 5145 -->
+  <description>Custom Alert: Network share accessed (possible lateral movement)</description>
+</rule>
+
+🧩 Rule 2: Suspicious SMB Process Activity
+<rule id="100203" level="8">
+  <if_sid>92106</if_sid> <!-- Corresponds to system activity on SMB port -->
+  <description>Custom Alert: Suspicious Windows system process activity over SMB port</description>
+</rule>
+--> These rules trigger based on built-in SIDs from Wazuh’s ruleset that rely on native Security event logs 
+
+✅ Conclusion
+This simulation demonstrated how attackers can perform lateral movement by leveraging SMB shares to copy and execute malicious files across systems in a Windows environment.It was successfully detected using native Windows Security Event Logs and custom Wazuh rules.
+
+The key to effective detection lies in:
+ ** Enabling the right audit policies (e.g., object access, logon events),
+ ** Properly configuring the Wazuh agent to monitor the Security event channel,
+ ** Writing meaningful custom rules to correlate suspicious SMB behavior.
