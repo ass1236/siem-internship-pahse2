@@ -1,0 +1,49 @@
+🎯 Objective
+The objective of this simulation is to evaluate how security tools like Sysmon and Wazuh detect the extraction and execution of a potentially malicious file contained within a password-protected archive. The goal is to determine whether it's possible to trace the origin, hash, and execution behavior of such a file using detection rules, even if traditional antivirus solutions cannot inspect the archive contents before extraction.
+
+🧪 Simulation Steps
+1- Create a Simulated Malicious Payload
+   echo "malicious payload" > malware.bat
+   This .bat file simulates a malicious script.
+
+2- Bundle the Payload in a Password-Protected Archive
+   & "C:\Program Files\7-Zip\7z.exe" a -p"infected123" malicious_archive.zip malware.bat
+     ** -p"infected123": Sets the password.
+     ** -mhe=on: (optional) Hides archive metadata for stealth.
+
+3- Extract the Archive
+   & "C:\Program Files\7-Zip\7z.exe" x malicious_archive.zip -p"infected123"
+   ** You can also use the 7-Zip GUI.
+
+4- Execute the Extracted File
+   .\malware.bat
+   ** This simulates a user accidentally launching the malicious payload.
+
+⚙️ Wazuh Custom Rule
+<rule id="100150" level="8">
+  <if_sid>92200</if_sid> <!-- Sysmon FileCreate (Event ID 11) -->
+  <match>win.eventdata.image=.*\\(WinRAR|7zFM|7z|explorer)\.exe</match>
+  <match>win.eventdata.targetFilename=.*\.(exe|bat|ps1|js)$</match>
+  <description>Archive tool extracted a potentially malicious file</description>
+  <group>malicious_archive</group>
+</rule>
+
+🔍 What This Rule Detects
+ ** Trigger Source: Detects file extraction by known archiving tools (7z.exe, WinRAR.exe, explorer.exe).
+ ** Suspicious File Types: Only alerts when certain executable files are extracted (.exe, .bat, .ps1, .js).
+ ** Purpose: Flags potential malware deployment by highlighting file creation activity post-archive extraction.
+
+📊 Detection Analysis
+Sysmon Logs:
+  ** Event ID 11 (FileCreate) captures the creation of malware.bat and links it to the archiving tool.
+  ** If executed, Event ID 1 (ProcessCreate) logs the launch of the file, including command-line arguments and hash values.
+
+Wazuh Alerts:
+  ** Correlates Sysmon logs via custom rule 100150.
+  ** Groups the alert under malicious_archive for easier tracking and filtering.
+  ** Provides context like parent process (e.g., 7z.exe), timestamp, and file location (e.g., Downloads folder).
+
+✅ Conclusion
+This scenario demonstrates how attackers may conceal malware inside password-protected archives to bypass traditional security layers. However, using tools like Sysmon and Wazuh with the appropriate configuration, you can detect and trace this behavior effectively.
+The custom rule crafted in this exercise provides a clear and actionable alert, enhancing your visibility into suspicious archive extraction events.
+This reinforces the importance of behavior-based monitoring in modern endpoint defense.
