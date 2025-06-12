@@ -1,5 +1,5 @@
 timestamp,agent.name,rule.description,rule.level,rule.id
-"Jun 4, 2025 @ 14:29:42.833","vic-agent","⚠️ Malicious PowerShell execution: Encoded command dropped executable in suspicious location","15","100051"
+"this is the triggered rule --> Jun 4, 2025 @ 14:29:42.833","vic-agent","⚠️ Malicious PowerShell execution: Encoded command dropped executable in suspicious location","15","100051"
 "Jun 4, 2025 @ 14:29:42.832","vic-agent","Powershell.exe spawned a powershell process which executed a base64 encoded command","12","92057"
 "Jun 4, 2025 @ 14:29:40.308","vic-agent","⚠️ Malicious PowerShell execution: Encoded command dropped executable in suspicious location","15","100051"
 "Jun 4, 2025 @ 14:29:40.266","vic-agent","Powershell.exe spawned a powershell process which executed a base64 encoded command","12","92057"
