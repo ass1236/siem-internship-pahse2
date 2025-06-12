@@ -1,8 +1,8 @@
 timestamp,agent.name,rule.description,rule.level,rule.id
-"May 29, 2025 @ 11:54:30.775","DESKTOP-3LB6CRU","Administrators Group Changed","12","60154"
-"May 29, 2025 @ 11:54:26.977","DESKTOP-3LB6CRU","Privilege Escalation - PowerShell dropped executable in Windows directory","12","100313"
-"May 29, 2025 @ 11:54:23.142","DESKTOP-3LB6CRU","Privilege Escalation - New user added to security-enabled local group","12","100310"
-"May 29, 2025 @ 11:54:23.141","DESKTOP-3LB6CRU","Privilege Escalation - Domain Users group changed","10","100312"
+
+"this is the triggered rule no 1--> May 29, 2025 @ 11:54:26.977","DESKTOP-3LB6CRU","Privilege Escalation - PowerShell dropped executable in Windows directory","12","100313"
+"this is the triggered rule no 2--> May 29, 2025 @ 11:54:23.142","DESKTOP-3LB6CRU","Privilege Escalation - New user added to security-enabled local group","12","100310"
+"this is the triggered rule no 3--> May 29, 2025 @ 11:54:23.141","DESKTOP-3LB6CRU","Privilege Escalation - Domain Users group changed","10","100312"
 "May 29, 2025 @ 11:54:22.421","DESKTOP-3LB6CRU","Wazuh agent started.","3","503"
 "May 29, 2025 @ 11:54:09.959","DESKTOP-3LB6CRU","Wazuh agent stopped.","3","506"
 "May 29, 2025 @ 11:54:09.897","DESKTOP-3LB6CRU","Privilege Escalation - PowerShell dropped executable in Windows directory","12","100313"
