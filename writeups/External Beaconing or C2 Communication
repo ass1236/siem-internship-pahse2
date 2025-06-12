@@ -1,0 +1,54 @@
+
+🎯 Objective:
+Simulate and detect Command and Control (C2) beaconing activity using Netcat, and validate detection through built-in Wazuh rules triggered during the attack.
+
+🔬 Simulation Overview
+A simulated reverse beaconing channel was established using nc64.exe, where the victim host sends repeated connections to a command server every 60 seconds.
+
+⚙️ Attack Setup
+📡 Attacker (C2 Listener):
+.\nc64.exe -lvp 4444
+
+🖥️ Victim (Beaconing Script):
+while($true){
+    echo "ping" | .\nc64.exe 192.168.1.64 4444
+    Start-Sleep -Seconds 60
+}
+ ** This loop replicates typical C2 beaconing traffic used in post-exploitation frameworks such as Cobalt Strike, Empire, or Metasploit.
+
+🧠 Wazuh Detection and Rule Triggering
+During the simulation, Wazuh Key built-in rules triggered include:
+
+MITRE| Technique|	Tactic|	Rule ID|	Level|	Description
+--------------------------------------------------------------------------------------------------------------
+T1105|	Command and Control|	92205|	9|	Powershell process created an executable file in Windows root folder
+T1059.001|	Execution|	92066|	4|	SecEdit.exe launched by PowerShell in suspicious path
+T1087|	Discovery|	92031|	3|	Discovery activity executed
+T1087|	Discovery|	92039|	3|	A net.exe account discovery command was initiated (multiple instances)
+
+🧩 Analysis
+ ** Rule ID 92205 (Level 9): High-confidence alert indicating a PowerShell script created an executable in a critical location (Windows root folder), often seen in malware delivery or lateral movement staging.
+
+ ** Rule ID 92066 (Level 4): Netcat-like tool (SecEdit.exe) executed from a suspicious location (SysWOW64) via PowerShell—consistent with staged malware or unauthorized binaries.
+
+ ** Rules 92031 & 92039 (Level 3): Multiple net.exe command executions, indicating user enumeration—commonly paired with C2 activity to map the environment.
+
+📊 Detection Summary
+1- Technique Detected: MITRE ATT&CK T1105 – Ingress Tool Transfer
+
+2- Tactics Involved:
+
+ ** Command and Control (T1105)
+ ** Execution (T1059.001 – PowerShell)
+ ** Discovery (T1087 – Account Discovery)
+3- Rules Triggered: 92205, 92066, 92031, 92039
+
+4- Indicators of Beaconing: Repetitive outbound traffic at regular intervals to the same IP and port using non-standard tool (nc64.exe).
+
+✅ Conclusion
+Wazuh effectively detected all stages of the simulated C2 scenario using its default ruleset:
+ ** Binary transfer and execution via PowerShell
+ ** Unauthorized use of system commands
+ ** Regular beaconing patterns
+
+This confirms Wazuh’s ability to flag suspicious post-exploitation behavior without custom rules, making it a reliable tool for early C2 detection and investigation.
