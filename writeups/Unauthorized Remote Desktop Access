@@ -1,0 +1,50 @@
+📌 Overview
+Remote Desktop Protocol (RDP) is a common method used for remote system administration, but it's also frequently targeted by attackers. Detecting unauthorized RDP login attempts is essential for identifying potential intrusions.
+In this simulation, an unauthorized RDP login was attempted from an internal IP address. The login was performed using Hydra to brute-force credentials.
+A custom Wazuh rule was used to detect Windows Security Event ID 4624 with Logon Type 10, which indicates a RemoteInteractive (RDP) login.
+
+ Objective
+1- Simulate an unauthorized RDP login attempt using Hydra from a different IP within the LAN or virtual network.
+2- Generate relevant log events on the Windows target system.
+3- Detect successful RDP logins (Event ID 4624 + Logon Type 10) using Wazuh.
+4- Trigger a custom Wazuh alert for RDP access attempts from internal IP addresses.
+
+ Attack Simulation
+Step 1: Brute-Force RDP Login Using Hydra
+On the attacker machine (Kali Linux), the following command was executed:
+--> hydra -l <username> -P <password_list> rdp://192.168.X.X
+
+Step 2: Log Event on Windows Target
+Once valid credentials were guessed, the target system generated:
+ ** Windows Security Event ID 4624 — Indicates a successful logon
+ ** Logon Type: 10 — RemoteInteractive (RDP)
+ ** Source IP: 192.168.X.X (attacker IP inside the LAN)
+
+📡 Wazuh Rule Configuration
+A custom rule was created in Wazuh to detect successful RDP logins from internal IP addresses:
+<group name="rdp-unauthorized-access">
+  <rule id="100600" level="14">
+    <if_sid>92657</if_sid>
+    <description>🚨 Custom: Unauthorized Remote Desktop Access Detected</description>
+  </rule>
+</group>
+ ** Parent Rule SID: 92657 (detects successful Windows logons)
+ ** Trigger Conditions:
+    ** Logon Type 10
+    ** Source IP in private range (e.g., 192.168.X.X)
+ ** Severity Level: 14 (High)
+
+📈 Detection Output in Wazuh
+After executing the brute-force attack and achieving a successful login, Wazuh generated the following alert:
+
+Field|	Value
+---------------------------------------------------------------------
+Rule ID|	100600
+Rule Level|	14
+Description|	🚨 Custom: Unauthorized Remote Desktop Access Detected
+Event ID|	4624
+Logon Type|	10 (RemoteInteractive)
+
+
+✅ Conclusion
+This simulation confirms that Wazuh, with properly configured custom rules, can detect unauthorized RDP access based on successful logins (Event ID 4624) and Logon Type 10 from potentially unauthorized internal IP addresses. Monitoring these events is essential for identifying suspicious or malicious use of RDP within an enterprise or lab environment.
