@@ -1,0 +1,33 @@
+📌 Objective:
+To detect and alert on suspicious network activity such as port scanning, repeated connection attempts, which are common indicators of network reconnaissance or early-stage attacks.
+
+🔍 Context:
+Network reconnaissance is often one of the first steps attackers take to map out target systems and identify vulnerabilities.
+Tools like Nmap can generate scan traffic that can be detected by monitoring network logs or host-based agents.
+
+⚙️ Wazuh Custom Rule for Suspicious Network Activity
+
+<group name="windows,admin_shares,custom"> 
+  <rule id="100100" level="12">
+    <if_sid>92105</if_sid>
+    <description>Custom Alert: Suspicious Network Activity</description>
+  </rule>
+</group>
+🧠 Explanation:
+ ** This rule inherits from Wazuh built-in rule SID 92105, which detects network-related suspicious activity (such as connections to administrative shares or unusual network behavior).
+ ** The custom rule raises the alert level to 12, highlighting it as a critical incident.
+ ** Grouping it under windows and admin_shares focuses on activity involving Windows administrative shares or network access.
+
+🔎 Practical Example: Detecting an Nmap Scan
+An attacker may use the following Nmap command for stealth scanning and OS detection:
+nmap -sT -T4 -A -v -Pn <victim_ip>
+
+ ** -sT — TCP connect scan (standard scan using full TCP handshake).
+ ** -T4 — Faster timing template (reduces scan time).
+ ** -A — Enables OS detection, version detection, script scanning, and traceroute.
+ ** -v — Verbose output.
+ ** -Pn — Treat all hosts as online (skip host discovery).
+This scan generates multiple TCP connection attempts across many ports, triggering network logs that Wazuh can detect through rule 92105 and your custom rule 100100.
+
+📈 Summary:
+Integrating network activity detection with Wazuh custom rules helps security teams identify suspicious scans and connection attempts indicative of early attack phases, improving incident response time and system protection.
