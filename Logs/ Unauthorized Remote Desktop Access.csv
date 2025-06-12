@@ -1,6 +1,6 @@
 timestamp,agent.name,rule.description,rule.level,rule.id
 
-"this is the triggered rule--> May 21, 2025 @ 12:15:15.862","windows","🚨 Custom:  Unauthorized Remote Desktop Access via RDP detected (based on rule 92657)","14","100600"
+"this is the triggered rule--> May 21, 2025 @ 12:15:15.862","windows","🚨 Custom: Unauthorized Remote Desktop Access Detected","14","100600"
 "May 21, 2025 @ 12:15:15.858","windows","Special privileges assigned to new logon.","3","67028"
 "May 21, 2025 @ 12:15:15.762","windows","Special privileges assigned to new logon.","3","67028"
 "May 21, 2025 @ 12:15:13.748","kali","Wazuh server started.","3","502"
