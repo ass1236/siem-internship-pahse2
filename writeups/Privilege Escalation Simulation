@@ -1,0 +1,50 @@
+
+📌 Objective:
+This detection logic aims to identify Privilege Escalation Attempts on Windows systems by enhancing the severity and visibility of specific security-related events. 
+These include unauthorized user privilege changes and suspicious PowerShell behavior, using Wazuh’s correlation engine.
+
+🔍 Context:
+Privilege escalation is a core phase in post-exploitation where attackers elevate their privileges, often from a standard user to an administrator, to gain full control of the system. Detecting such activities early is critical to preventing persistence and lateral movement.
+
+To address this, we created custom rules that elevate the alert level of specific built-in rules:
+1. 🔒 Rule: New Member Added to a Security-Enabled Local Group
+
+<group name="windows,security,privilege_escalation,group_addition">
+  <rule id="100310" level="12">
+    <if_sid>60144</if_sid>
+    <description>Privilege Escalation - New user added to security-enabled local group</description>
+  </rule>
+</group>
+🧠 Explanation:
+ ** Inherits from built-in rule 60144, which maps to Event ID 4732 (A member was added to a security-enabled local group).
+ ** This event could indicate an attempt to escalate privileges by adding a user to a high-privilege group such as Administrators.
+ ** Severity level elevated to 12 to reflect critical risk.
+
+2. 👥 Rule: Domain Users Group Changed
+
+<group name="windows,security,privilege_escalation,domain_users_change">
+  <rule id="100312" level="10">
+    <if_sid>60160</if_sid>
+    <description>Privilege Escalation - Domain Users group changed</description>
+  </rule>
+</group>
+🧠 Explanation:
+ ** Based on Wazuh SID 60160, usually linked to Event ID 4728 or similar.
+ ** Detects changes to the Domain Users group, which can be abused in domain environments to grant wide access.
+ ** Elevated to level 10 to ensure visibility during monitoring or alert triage.
+
+3. ⚙️ Rule: PowerShell Dropped Executable in Windows Directory
+
+<group name="windows,sysmon,privilege_escalation,exec_drop">
+  <rule id="100313" level="12">
+    <if_sid>92205</if_sid>
+    <description>Privilege Escalation - PowerShell dropped executable in Windows directory</description>
+  </rule>
+</group>
+🧠 Explanation:
+ ** Inherits from custom Sysmon-based detection rule 92205 for PowerShell dropping an .exe in C:\Windows.
+ ** This behavior is often used by attackers to deploy malicious payloads or persistence mechanisms with elevated privileges.
+ ** Assigned critical severity (level 12), and grouped under sysmon, privilege_escalation.
+
+📈 Final Outcome:
+Once deployed, these rules provide elevated, tagged alerts for privilege escalation scenarios, enabling quick response by the SOC or blue team analysts.
