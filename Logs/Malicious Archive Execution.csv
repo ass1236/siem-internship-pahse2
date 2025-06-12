@@ -1,5 +1,5 @@
 timestamp,agent.name,rule.description,rule.level,rule.id
-"Jun 11, 2025 @ 15:46:30.517","vic-agent","Archive tool extracted a potentially malicious file","8","100150"
+"this is the triggered rule --> Jun 11, 2025 @ 15:46:30.517","vic-agent","Archive tool extracted a potentially malicious file","8","100150"
 "Jun 11, 2025 @ 15:44:52.214","vic-agent","Powershell process created an executable file in Windows root folder","9","92205"
 "Jun 11, 2025 @ 15:44:47.681","vic-agent","Windows Logon Success","3","60106"
 "Jun 11, 2025 @ 15:44:46.328","vic-agent","Windows Logon Success","3","60106"
