@@ -2,7 +2,7 @@ timestamp,agent.name,rule.description,rule.level,rule.id
 "Jun 4, 2025 @ 13:11:33.662","vic-agent","CIS Microsoft Windows 10 Enterprise Benchmark v1.12.0: Ensure 'Network access: Allow anonymous SID/Name translation' is set to 'Disabled'.","3","19009"
 "Jun 4, 2025 @ 13:11:13.776","vic-agent","Software protection service scheduled successfully.","3","60642"
 "Jun 4, 2025 @ 13:11:13.596","vic-agent","SCA summary: CIS Microsoft Windows 10 Enterprise Benchmark v1.12.0: Score less than 50% (30)","7","19004"
-this is the triggered rule-->"Jun 4, 2025 @ 13:11:11.597","vic-agent","PowerShell initiated a network connection, created an executable, and compressed files within 10 minutes","15","100033"
+"this is the triggered rule-->Jun 4, 2025 @ 13:11:11.597","vic-agent","PowerShell initiated a network connection, created an executable, and compressed files within 10 minutes","15","100033"
 "Jun 4, 2025 @ 13:10:54.166","kali","PAM: Login session closed.","3","5502"
 "Jun 4, 2025 @ 13:10:51.396","vic-agent","CIS Microsoft Windows 10 Enterprise Benchmark v1.12.0: Ensure 'Network access: Allow anonymous SID/Name translation' is set to 'Disabled'.: Status changed from passed to 'not applicable'","5","19012"
 "Jun 4, 2025 @ 13:10:46.077","vic-agent","Executable dropped in Windows root folder","6","92217"
