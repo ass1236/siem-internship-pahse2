@@ -1,6 +1,6 @@
 timestamp,agent.name,rule.description,rule.level,rule.id
-"Jun 12, 2025 @ 15:50:12.827","vic-agent","Custom alert:PowerShell reverse shell behavior","15","100700"
-"Jun 12, 2025 @ 15:50:12.824","vic-agent","Custom: PowerShell reverse shell connection","10","100102"
+"this is the triggered rule no 1-->Jun 12, 2025 @ 15:50:12.827","vic-agent","Custom alert:PowerShell reverse shell behavior","15","100700"
+"this is the triggered rule no 2-->Jun 12, 2025 @ 15:50:12.824","vic-agent","Custom: PowerShell reverse shell connection","10","100102"
 "Jun 12, 2025 @ 15:50:11.305","vic-agent","Powershell process created an executable file in Windows root folder","9","92205"
 "Jun 12, 2025 @ 15:50:03.337","vic-agent","Wazuh agent started.","3","503"
 "Jun 12, 2025 @ 15:49:57.908","vic-agent","Wazuh agent stopped.","3","506"
