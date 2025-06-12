@@ -1,15 +1,6 @@
 timestamp,agent.name,rule.description,rule.level,rule.id
-"May 21, 2025 @ 12:15:18.938","windows","Non service account logged off.","3","67023"
-"May 21, 2025 @ 12:15:18.934","windows","Non service account logged off.","3","67023"
-"May 21, 2025 @ 12:15:17.882","windows","Non service account logged off.","3","67023"
-"May 21, 2025 @ 12:15:15.993","windows","Special privileges assigned to new logon.","3","67028"
-"May 21, 2025 @ 12:15:15.989","windows","Special privileges assigned to new logon.","3","67028"
-"May 21, 2025 @ 12:15:15.987","windows","Non network or service local logon.","3","67022"
-"May 21, 2025 @ 12:15:15.951","windows","Non network or service local logon.","3","67022"
-"May 21, 2025 @ 12:15:15.923","windows","Windows User Logoff","3","60137"
-"May 21, 2025 @ 12:15:15.922","windows","Non network or service local logon.","3","67022"
-"May 21, 2025 @ 12:15:15.905","windows","Windows Logon Success","3","60106"
-"May 21, 2025 @ 12:15:15.862","windows","🚨 Custom: Lateral movement via RDP detected (based on rule 92657)","14","100600"
+
+"this is the triggered rule--> May 21, 2025 @ 12:15:15.862","windows","🚨 Custom:  Unauthorized Remote Desktop Access via RDP detected (based on rule 92657)","14","100600"
 "May 21, 2025 @ 12:15:15.858","windows","Special privileges assigned to new logon.","3","67028"
 "May 21, 2025 @ 12:15:15.762","windows","Special privileges assigned to new logon.","3","67028"
 "May 21, 2025 @ 12:15:13.748","kali","Wazuh server started.","3","502"
